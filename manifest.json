@@ -2,7 +2,9 @@
   "name": "私人错题集",
   "short_name": "错题集",
   "description": "收录错题 · 分析错因 · 精准复习",
-  "start_url": "/index.html",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#fef6f9",
   "theme_color": "#f8a4b8",
@@ -31,6 +33,11 @@
     {
       "src": "static/icons/icon-152.png",
       "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "static/icons/icon-180.png",
+      "sizes": "180x180",
       "type": "image/png"
     },
     {
