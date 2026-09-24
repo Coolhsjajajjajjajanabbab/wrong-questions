@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>私人错题集</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- PWA 配置 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f8a4b8">
+    <link rel="apple-touch-icon" href="static/icons/icon-192.png">
+</head>
+<body>
+    <div class="container">
+        <h1>📚 私人错题集</h1>
+        <p class="subtitle">收录错题 · 分析错因 · 精准复习</p>
+
+        <!-- 快捷统计 -->
+        <div class="quick-stats" id="quickStats">
+            <div class="quick-stat">
+                <span class="quick-stat-num" id="totalCount">0</span>
+                <span class="quick-stat-label">错题总数</span>
+            </div>
+            <div class="quick-stat">
+                <span class="quick-stat-num" id="todayCount">0</span>
+                <span class="quick-stat-label">今日新增</span>
+            </div>
+            <div class="quick-stat">
+                <span class="quick-stat-num" id="subjectCount">0</span>
+                <span class="quick-stat-label">科目数</span>
+            </div>
+        </div>
+
+        <!-- 功能卡片区域 -->
+        <div class="features">
+            <div class="feature-card" data-page="share.html">
+                <div class="feature-icon">✏️</div>
+                <h3>录入错题</h3>
+                <p>拍照/文字录入，记录错因与考点</p>
+            </div>
+            <div class="feature-card" data-page="search.html">
+                <div class="feature-icon">🔍</div>
+                <h3>浏览搜索</h3>
+                <p>按科目、考点、关键词查找错题</p>
+            </div>
+            <div class="feature-card" data-page="stats.html">
+                <div class="feature-icon">📊</div>
+                <h3>统计看板</h3>
+                <p>薄弱考点、各科分布、复习进度</p>
+            </div>
+        </div>
+
+        <!-- 最近错题预览 -->
+        <div class="recent-section">
+            <h3>📌 最近错题</h3>
+            <div id="recentErrors" class="recent-list">
+                <p class="tip">还没有错题，快去录入吧！</p>
+            </div>
+        </div>
+
+        <!-- 数据管理 -->
+        <div class="data-actions">
+            <button class="btn-secondary" id="exportBtn">📦 导出数据</button>
+            <button class="btn-secondary" id="importBtn">📥 导入数据</button>
+            <input type="file" id="importFile" accept=".json" style="display:none">
+        </div>
+    </div>
+
+    <!-- 可爱的小狗装饰 -->
+    <img src="static/dogs/dog1.png" alt="cute dog" class="dog-decoration dog-bottom-right">
+    <img src="static/dogs/dog3.png" alt="cute dog" class="dog-decoration dog-bottom-left">
+
+    <script src="js/main.js"></script>
+    
+    <!-- 注册 Service Worker -->
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker 注册成功'))
+            .catch(err => console.log('Service Worker 注册失败', err));
+    }
+    </script>
+</body>
+</html>

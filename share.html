@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>录入错题 - 私人错题集</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- PWA 配置 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f8a4b8">
+    <link rel="apple-touch-icon" href="static/icons/icon-192.png">
+</head>
+<body>
+    <div class="container container-wide">
+        <a href="index.html" class="back-btn">← 返回首页</a>
+
+        <h1>✏️ 录入错题</h1>
+        <p class="subtitle">记录错题，分析错因，不再踩坑</p>
+
+        <!-- 录入模式切换 -->
+        <div class="mode-tabs">
+            <button class="mode-tab active" data-mode="single">单条录入</button>
+            <button class="mode-tab" data-mode="batch">批量导入</button>
+        </div>
+
+        <!-- 单条录入表单 -->
+        <form class="share-form" id="shareForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="subject">科目</label>
+                    <input type="text" id="subject" placeholder="如：高等数学" list="subjectList" required>
+                    <datalist id="subjectList"></datalist>
+                </div>
+                <div class="form-group">
+                    <label for="chapter">章节/考点</label>
+                    <input type="text" id="chapter" placeholder="如：极限与连续" list="chapterList">
+                    <datalist id="chapterList"></datalist>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="difficulty">难度</label>
+                <select id="difficulty">
+                    <option value="简单">简单</option>
+                    <option value="中等" selected>中等</option>
+                    <option value="困难">困难</option>
+                </select>
+            </div>
+
+            <!-- 图片上传 + 自动分析 -->
+            <div class="form-group">
+                <label>题目截图（上传后自动识别题目和答案区域）</label>
+                <div class="image-upload-area" id="imageUploadArea">
+                    <p>📷 点击或拖拽上传题目图片</p>
+                    <input type="file" id="questionImage" accept="image/*" style="display:none">
+                </div>
+
+                <!-- 分析状态 -->
+                <div class="auto-status" id="autoStatus" style="display:none"></div>
+
+                <!-- 原图预览（可点击放大） -->
+                <div class="image-preview-wrap" id="imagePreviewWrap" style="display:none">
+                    <img class="image-preview-thumb" id="imagePreviewThumb">
+                    <div class="image-preview-hint">🔍 点击放大查看原图</div>
+                </div>
+
+                <!-- 自动分析结果预览 -->
+                <div class="crop-results" id="cropResults" style="display:none">
+                    <div class="crop-result" id="cropResultQuestion" style="display:none">
+                        <span class="crop-result-label">📝 题目区域（自动识别）</span>
+                        <img class="crop-result-img">
+                        <button type="button" class="crop-clear-btn" data-target="question">✕</button>
+                    </div>
+                    <div class="crop-result" id="cropResultAnswer" style="display:none">
+                        <span class="crop-result-label">📋 答案/解析区域（自动识别）</span>
+                        <img class="crop-result-img">
+                        <button type="button" class="crop-clear-btn" data-target="answer">✕</button>
+                    </div>
+                </div>
+
+                <!-- 手动微调入口 -->
+                <div class="manual-adjust-wrap" id="manualAdjustWrap" style="display:none">
+                    <button type="button" class="btn-secondary" id="manualAdjustBtn">🔧 自动识别不准？手动裁剪</button>
+                    <button type="button" class="btn-secondary" id="autoResetBtn">↩️ 重新上传</button>
+                </div>
+
+                <!-- 手动裁剪画布（默认隐藏） -->
+                <div class="crop-toolbar" id="cropToolbar" style="display:none">
+                    <span class="crop-hint" id="cropHintText">👆 在图片上拖拽框选</span>
+                    <button type="button" class="crop-mode-btn active" data-crop="question">📝 框选题目</button>
+                    <button type="button" class="crop-mode-btn" data-crop="answer">📋 框选答案</button>
+                    <button type="button" class="btn-secondary" id="cropResetBtn">↩️ 重置</button>
+                </div>
+                <div class="crop-canvas-wrap" id="cropCanvasWrap" style="display:none">
+                    <canvas id="cropCanvas"></canvas>
+                    <div class="crop-rect" id="cropRect" style="display:none"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="question">题目内容 <span class="optional">（可选，手动填写或仅保留截图）</span></label>
+                <textarea id="question" rows="4" placeholder="请输入题目内容..."></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="myAnswer">我的答案</label>
+                    <textarea id="myAnswer" rows="3" placeholder="你当时写的答案..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="correctAnswer">正确答案 / 解析</label>
+                    <textarea id="correctAnswer" rows="3" placeholder="正确答案或解析..."></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="errorReason">错因分析</label>
+                <select id="errorReason">
+                    <option value="">-- 选择错因 --</option>
+                    <option value="概念不清">概念不清</option>
+                    <option value="计算失误">计算失误</option>
+                    <option value="审题不清">审题不清</option>
+                    <option value="方法错误">方法错误</option>
+                    <option value="知识遗忘">知识遗忘</option>
+                    <option value="粗心大意">粗心大意</option>
+                    <option value="题型陌生">题型陌生</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">补充笔记</label>
+                <textarea id="notes" rows="3" placeholder="解题思路、关联知识点、举一反三..."></textarea>
+            </div>
+
+            <!-- 自定义标签系统 -->
+            <div class="form-group">
+                <label>标签</label>
+                <div class="tag-system">
+                    <!-- 已选标签展示区 -->
+                    <div class="tag-selected" id="tagSelected"></div>
+                    <!-- 可选标签池 -->
+                    <div class="tag-pool" id="tagPool"></div>
+                    <!-- 新增标签 -->
+                    <div class="tag-input-row">
+                        <input type="text" id="tagNewInput" placeholder="输入新标签名">
+                        <button type="button" class="btn-secondary" id="tagAddBtn">+ 添加</button>
+                        <button type="button" class="btn-secondary" id="tagManageBtn">⚙️ 管理</button>
+                    </div>
+                    <!-- 管理面板 -->
+                    <div class="tag-manage-panel" id="tagManagePanel" style="display:none">
+                        <p class="tag-manage-hint">点击 ✕ 删除标签（仅从库中移除，不影响已保存的错题）</p>
+                        <div class="tag-manage-list" id="tagManageList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">✅ 保存错题</button>
+        </form>
+
+        <!-- 批量导入 -->
+        <form class="share-form" id="batchForm" style="display:none">
+            <div class="form-group">
+                <label for="batchInput">批量粘贴（CSV 格式）</label>
+                <p class="format-hint">格式：科目,章节,题目,我的答案,正确答案,错因,难度</p>
+                <textarea id="batchInput" rows="10" placeholder="高等数学,极限,求lim(x→0) sinx/x,0,1,概念不清,中等
+线性代数,矩阵,求逆矩阵,算错了,正确结果,计算失误,简单"></textarea>
+            </div>
+            <button type="button" class="btn" id="batchImportBtn">📥 批量导入</button>
+        </form>
+    </div>
+
+    <!-- 可爱的小狗装饰 -->
+    <img src="static/dogs/dog2.png" alt="cute dog" class="dog-decoration dog-top-right">
+
+    <script src="js/share.js"></script>
+    
+    <!-- 注册 Service Worker -->
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker 注册成功'))
+            .catch(err => console.log('Service Worker 注册失败', err));
+    }
+    </script>
+</body>
+</html>

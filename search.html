@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浏览搜索 - 私人错题集</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- PWA 配置 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f8a4b8">
+    <link rel="apple-touch-icon" href="static/icons/icon-192.png">
+</head>
+<body>
+    <div class="container container-wide">
+        <a href="index.html" class="back-btn">← 返回首页</a>
+
+        <h1>🔍 浏览搜索</h1>
+        <p class="subtitle">按考点、科目、关键词查找错题</p>
+
+        <!-- 搜索与筛选 -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="输入关键词、考点、题目内容...">
+            <button class="btn" id="searchBtn">搜索</button>
+        </div>
+
+        <div class="filter-row">
+            <div class="filter-group">
+                <label>科目</label>
+                <select id="filterSubject"><option value="">全部</option></select>
+            </div>
+            <div class="filter-group">
+                <label>错因</label>
+                <select id="filterReason"><option value="">全部</option></select>
+            </div>
+            <div class="filter-group">
+                <label>难度</label>
+                <select id="filterDifficulty">
+                    <option value="">全部</option>
+                    <option value="简单">简单</option>
+                    <option value="中等">中等</option>
+                    <option value="困难">困难</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>状态</label>
+                <select id="filterStatus">
+                    <option value="">全部</option>
+                    <option value="未掌握">未掌握</option>
+                    <option value="已掌握">已掌握</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 标签筛选 -->
+        <div class="filter-tags" id="filterTags">
+            <span class="filter-tags-label">标签：</span>
+        </div>
+
+        <!-- 结果计数 -->
+        <div class="result-count" id="resultCount"></div>
+
+        <!-- 错题卡片列表 -->
+        <div class="error-cards" id="errorCards">
+            <p class="tip">加载中...</p>
+        </div>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content" id="modalContent"></div>
+    </div>
+
+    <!-- 可爱的小狗装饰 -->
+    <img src="static/dogs/dog4.png" alt="cute dog" class="dog-decoration dog-bottom-right">
+
+    <script src="js/search.js"></script>
+    
+    <!-- 注册 Service Worker -->
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker 注册成功'))
+            .catch(err => console.log('Service Worker 注册失败', err));
+    }
+    </script>
+</body>
+</html>

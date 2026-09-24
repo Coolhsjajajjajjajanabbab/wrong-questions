@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统计看板 - 私人错题集</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- PWA 配置 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f8a4b8">
+    <link rel="apple-touch-icon" href="static/icons/icon-192.png">
+</head>
+<body>
+    <div class="container container-wide">
+        <a href="index.html" class="back-btn">← 返回首页</a>
+
+        <h1>📊 统计看板</h1>
+        <p class="subtitle">分析薄弱点，精准复习</p>
+
+        <!-- 总览卡片 -->
+        <div class="stats-grid">
+            <div class="stat-card stat-primary stat-clickable" data-stat="total">
+                <div class="stat-number" id="statTotal">0</div>
+                <div class="stat-label">错题总数</div>
+            </div>
+            <div class="stat-card stat-success stat-clickable" data-stat="mastered">
+                <div class="stat-number" id="statMastered">0</div>
+                <div class="stat-label">已掌握</div>
+            </div>
+            <div class="stat-card stat-warning stat-clickable" data-stat="unmastered">
+                <div class="stat-number" id="statUnmastered">0</div>
+                <div class="stat-label">未掌握</div>
+            </div>
+            <div class="stat-card stat-info stat-clickable" data-stat="review">
+                <div class="stat-number" id="statReview">0</div>
+                <div class="stat-label">总复习次数</div>
+            </div>
+        </div>
+
+        <!-- 掌握率进度条 -->
+        <div class="progress-section collapsible">
+            <h3 class="collapse-header" data-target="progressContent">📈 整体掌握率 <span class="collapse-icon">▼</span></h3>
+            <div class="collapse-body" id="progressContent">
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar" id="progressBar" style="width:0%"></div>
+                </div>
+                <span class="progress-text" id="progressText">0%</span>
+            </div>
+        </div>
+
+        <div class="charts-row">
+            <!-- 科目分布 -->
+            <div class="chart-card collapsible">
+                <h3 class="collapse-header" data-target="subjectChart">📚 各科错题分布 <span class="collapse-icon">▼</span></h3>
+                <div class="collapse-body chart-list" id="subjectChart"></div>
+            </div>
+
+            <!-- 错因分布 -->
+            <div class="chart-card collapsible">
+                <h3 class="collapse-header" data-target="reasonChart">🎯 错因分析 <span class="collapse-icon">▼</span></h3>
+                <div class="collapse-body chart-list" id="reasonChart"></div>
+            </div>
+        </div>
+
+        <div class="charts-row">
+            <!-- 高频考点 TOP 5 -->
+            <div class="chart-card collapsible">
+                <h3 class="collapse-header" data-target="topChapters">🔥 高频薄弱考点 TOP 5 <span class="collapse-icon">▼</span></h3>
+                <div class="collapse-body chart-list" id="topChapters"></div>
+            </div>
+
+            <!-- 难度分布 -->
+            <div class="chart-card collapsible">
+                <h3 class="collapse-header" data-target="difficultyChart">⚡ 难度分布 <span class="collapse-icon">▼</span></h3>
+                <div class="collapse-body chart-list" id="difficultyChart"></div>
+            </div>
+        </div>
+
+        <!-- 最近复习动态 -->
+        <div class="chart-card full-width collapsible">
+            <h3 class="collapse-header" data-target="recentReviews">🕐 最近复习记录 <span class="collapse-icon">▼</span></h3>
+            <div class="collapse-body review-list" id="recentReviews"></div>
+        </div>
+    </div>
+
+    <!-- 错题列表弹窗 -->
+    <div class="stat-modal-overlay" id="statModalOverlay">
+        <div class="stat-modal-content">
+            <div class="stat-modal-header">
+                <h3 id="statModalTitle">错题列表</h3>
+                <button class="stat-modal-close" id="statModalClose">✕</button>
+            </div>
+            <div class="stat-modal-body" id="statModalBody"></div>
+        </div>
+    </div>
+
+    <!-- 可爱的小狗装饰 -->
+    <img src="static/dogs/dog1.png" alt="cute dog" class="dog-decoration dog-top-left">
+    <img src="static/dogs/dog2.png" alt="cute dog" class="dog-decoration dog-bottom-right">
+
+    <script src="js/stats.js"></script>
+    
+    <!-- 注册 Service Worker -->
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker 注册成功'))
+            .catch(err => console.log('Service Worker 注册失败', err));
+    }
+    </script>
+</body>
+</html>

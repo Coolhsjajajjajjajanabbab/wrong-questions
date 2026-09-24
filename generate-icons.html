@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>生成 App 图标</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(160deg, #fef6f9, #f0e6f6, #e8f4f0);
+            padding: 40px;
+            text-align: center;
+            color: #5c4a5e;
+        }
+        h1 { color: #e8799a; margin-bottom: 8px; }
+        .subtitle { color: #8b7a8e; margin-bottom: 30px; }
+        .progress-bar {
+            width: 400px;
+            max-width: 90%;
+            height: 24px;
+            background: #fdd5de;
+            border-radius: 50px;
+            margin: 20px auto;
+            overflow: hidden;
+            border: 2px solid #f8a4b8;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f8a4b8, #c3b1e1);
+            border-radius: 50px;
+            transition: width 0.3s;
+            width: 0%;
+        }
+        .status { font-size: 14px; color: #8b7a8e; margin: 10px 0; }
+        .icons-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .icon-item canvas {
+            border-radius: 18%;
+            box-shadow: 0 4px 12px rgba(200,160,180,0.2);
+        }
+        .icon-label { font-size: 11px; color: #b0a0b3; }
+        .download-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #f8a4b8, #c3b1e1);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(248,164,184,0.3);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(248,164,184,0.4);
+        }
+        .done-msg {
+            display: none;
+            margin-top: 20px;
+            padding: 16px 24px;
+            background: #d4f5e4;
+            border: 2px solid #a8e6cf;
+            border-radius: 12px;
+            color: #047857;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .tip {
+            margin-top: 20px;
+            padding: 14px 20px;
+            background: #fff5d4;
+            border: 2px solid #ffeaa7;
+            border-radius: 12px;
+            color: #b8860b;
+            font-size: 13px;
+            text-align: left;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐕 生成 App 图标</h1>
+    <p class="subtitle">为你的错题集生成可爱的小狗图标</p>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="status" id="status">准备生成中...</div>
+
+    <div class="icons-grid" id="iconsGrid"></div>
+
+    <div class="done-msg" id="doneMsg">
+        ✅ 所有图标生成完成！点击下方按钮下载全部图标
+    </div>
+
+    <a class="download-btn" id="downloadAllBtn" style="display:none" onclick="downloadAll()">📥 下载全部图标到 icons 文件夹</a>
+
+    <div class="tip" id="tipBox" style="display:none">
+        <strong>📁 下载后怎么放？</strong><br>
+        把下载的图标文件放到项目目录：<br>
+        <code>D:\迅雷云盘\APP开发\index.html\static\icons\</code><br>
+        确保文件名和下面一致即可。
+    </div>
+
+    <script>
+    const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+    const generatedFiles = [];
+
+    function drawDogIcon(ctx, size) {
+        // 粉色渐变圆角背景
+        const gradient = ctx.createLinearGradient(0, 0, size, size);
+        gradient.addColorStop(0, '#f8a4b8');
+        gradient.addColorStop(0.5, '#c3b1e1');
+        gradient.addColorStop(1, '#a8e6cf');
+        
+        const r = size * 0.18;
+        ctx.beginPath();
+        ctx.moveTo(r, 0);
+        ctx.lineTo(size - r, 0);
+        ctx.quadraticCurveTo(size, 0, size, r);
+        ctx.lineTo(size, size - r);
+        ctx.quadraticCurveTo(size, size, size - r, size);
+        ctx.lineTo(r, size);
+        ctx.quadraticCurveTo(0, size, 0, size - r);
+        ctx.lineTo(0, r);
+        ctx.quadraticCurveTo(0, 0, r, 0);
+        ctx.closePath();
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        const cx = size / 2;
+        const cy = size / 2;
+        const s = size / 100; // 缩放因子
+
+        // 画一个可爱的小狗脸
+        // 头部（大圆）
+        ctx.fillStyle = '#f5d6a0';
+        ctx.beginPath();
+        ctx.arc(cx, cy - 2 * s, 32 * s, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 耳朵（左）
+        ctx.fillStyle = '#d4a574';
+        ctx.beginPath();
+        ctx.ellipse(cx - 26 * s, cy - 26 * s, 14 * s, 20 * s, -0.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 耳朵（右）
+        ctx.beginPath();
+        ctx.ellipse(cx + 26 * s, cy - 26 * s, 14 * s, 20 * s, 0.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 耳朵内侧（左）
+        ctx.fillStyle = '#f8a4b8';
+        ctx.beginPath();
+        ctx.ellipse(cx - 26 * s, cy - 24 * s, 8 * s, 12 * s, -0.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 耳朵内侧（右）
+        ctx.beginPath();
+        ctx.ellipse(cx + 26 * s, cy - 24 * s, 8 * s, 12 * s, 0.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 脸部白色区域
+        ctx.fillStyle = '#fff5ee';
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + 4 * s, 20 * s, 18 * s, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 眼睛（左）
+        ctx.fillStyle = '#5c4a5e';
+        ctx.beginPath();
+        ctx.arc(cx - 11 * s, cy - 6 * s, 5 * s, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 眼睛高光（左）
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(cx - 9 * s, cy - 8 * s, 2 * s, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 眼睛（右）
+        ctx.fillStyle = '#5c4a5e';
+        ctx.beginPath();
+        ctx.arc(cx + 11 * s, cy - 6 * s, 5 * s, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 眼睛高光（右）
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(cx + 13 * s, cy - 8 * s, 2 * s, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 鼻子
+        ctx.fillStyle = '#5c4a5e';
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + 4 * s, 6 * s, 4.5 * s, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 鼻子高光
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.beginPath();
+        ctx.ellipse(cx - 1.5 * s, cy + 2.5 * s, 2.5 * s, 1.5 * s, -0.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 嘴巴
+        ctx.strokeStyle = '#5c4a5e';
+        ctx.lineWidth = 1.5 * s;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + 8 * s);
+        ctx.lineTo(cx, cy + 12 * s);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(cx - 5 * s, cy + 13 * s, 5 * s, -0.8, 0.1);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(cx + 5 * s, cy + 13 * s, 5 * s, Math.PI - 0.1, Math.PI + 0.8);
+        ctx.stroke();
+
+        // 舌头
+        ctx.fillStyle = '#f8a4b8';
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + 16 * s, 4 * s, 5 * s, 0, 0, Math.PI);
+        ctx.fill();
+
+        // 腮红（左）
+        ctx.fillStyle = 'rgba(248, 164, 184, 0.35)';
+        ctx.beginPath();
+        ctx.ellipse(cx - 20 * s, cy + 6 * s, 6 * s, 4 * s, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 腮红（右）
+        ctx.beginPath();
+        ctx.ellipse(cx + 20 * s, cy + 6 * s, 6 * s, 4 * s, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 底部文字
+        if (size >= 128) {
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${Math.round(size * 0.09)}px "Microsoft YaHei", sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.shadowColor = 'rgba(0,0,0,0.2)';
+            ctx.shadowBlur = 3;
+            ctx.fillText('错题集', cx, size - size * 0.07);
+            ctx.shadowBlur = 0;
+        }
+    }
+
+    async function generateAll() {
+        const grid = document.getElementById('iconsGrid');
+        const progressFill = document.getElementById('progressFill');
+        const status = document.getElementById('status');
+
+        for (let i = 0; i < sizes.length; i++) {
+            const size = sizes[i];
+            status.textContent = `正在生成 ${size}x${size} 图标... (${i + 1}/${sizes.length})`;
+            progressFill.style.width = ((i + 1) / sizes.length * 100) + '%';
+
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            drawDogIcon(ctx, size);
+
+            // 显示预览（只显示较大的几个）
+            if (size >= 96) {
+                const preview = document.createElement('canvas');
+                const previewSize = Math.min(size, 128);
+                preview.width = previewSize;
+                preview.height = previewSize;
+                preview.getContext('2d').drawImage(canvas, 0, 0, previewSize, previewSize);
+
+                const item = document.createElement('div');
+                item.className = 'icon-item';
+                item.appendChild(preview);
+                const label = document.createElement('span');
+                label.className = 'icon-label';
+                label.textContent = `${size}x${size}`;
+                item.appendChild(label);
+                grid.appendChild(item);
+            }
+
+            // 保存数据
+            generatedFiles.push({
+                name: `icon-${size}.png`,
+                data: canvas.toDataURL('image/png'),
+                size: size
+            });
+
+            // 让 UI 更新
+            await new Promise(r => setTimeout(r, 200));
+        }
+
+        status.textContent = '✅ 全部生成完成！';
+        document.getElementById('doneMsg').style.display = 'block';
+        document.getElementById('downloadAllBtn').style.display = 'inline-block';
+        document.getElementById('tipBox').style.display = 'block';
+    }
+
+    function downloadAll() {
+        generatedFiles.forEach((file, i) => {
+            setTimeout(() => {
+                const a = document.createElement('a');
+                a.href = file.data;
+                a.download = file.name;
+                a.click();
+            }, i * 400);
+        });
+    }
+
+    generateAll();
+    </script>
+</body>
+</html>
